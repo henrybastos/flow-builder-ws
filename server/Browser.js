@@ -2,33 +2,56 @@ import puppeteer from "puppeteer-extra";
 import pluginStealth from 'puppeteer-extra-plugin-stealth';
 
 export class Browser {
+   /** @type {import('puppeteer').Browser} */
    static browser;
-   static pages;
+   /** @type {import('puppeteer').Page} */
    static page;
+   /** @type {Array<import('puppeteer').Page>} */
+   static pages;
 
    static async launch({ headless } = { headless: false }) {
-      if (this.browser === undefined) {
-         puppeteer.use(pluginStealth());
+      try {
+         console.log('[BROWSER] Launching browser...');
 
-         this.browser = await puppeteer.launch({
-            dumpio: true,
-            headless,
-            ...(process.env.PUPPETEER_EXECUTABLE_PATH && { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }),
-            args: [
-               `--window-size=${1366},${768}`,
-               // '--disable-features=IsolateOrigins,site-per-process'
-            ]
-         });
+         if (this.browser === undefined) {
+            puppeteer.use(pluginStealth());
+   
+            this.browser = await puppeteer.launch({
+               dumpio: true,
+               headless,
+               ...(process.env.PUPPETEER_EXECUTABLE_PATH && { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }),
+               args: [
+                  `--window-size=${1366},${768}`,
+                  // '--disable-features=IsolateOrigins,site-per-process'
+               ]
+            });
+   
+            this.webSocketEndpoint = this.browser.wsEndpoint();
+            
+            this.page = Array.from(await this.browser.pages())[0];
+   
+            this.page.on('close', () => {
+               this.browser.close();
+               console.log('[BROWSER] Browser closed');
+            });
+   
+            this.page.setViewport({ width: 1366, height: 720 });
+      
+            await this.page.setExtraHTTPHeaders({ 
+               'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)  Safari/537.36', 
+               'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 
+               'accept-encoding': 'gzip, deflate, br', 
+               'accept-language': 'pt-BR,en-US,en;q=0.9,en;q=0.8'
+            });
 
-         this.webSocketEndpoint = this.browser.wsEndpoint();
-         
-         this.page = Array.from(await this.browser.pages())[0];
-         this.page.on('close', () => {
-            this.browser.close();
-            console.log('Browser closed');
-         });
+            // await this.injectAllFunctions();
 
-         console.log(`[BROWSER] New browser launched at ${this.webSocketEndpoint}`);
+            console.log(`[BROWSER] New browser launched at ${ this.webSocketEndpoint }`);
+         }
+      } catch (err) {
+         console.error(err);
+         console.warn('[BROWSER] Closing browser...');
+         this.browser.close();
       }
    }
 
@@ -54,16 +77,15 @@ export class Browser {
       //    // Required to reload the page on "Create Jivo PT" flow preset.
       //    if (page.url().match(/app.jivosite.com/gi)) { await dialog.accept() }
       // });
+   }
 
-      // page.on('close', () => {
-      //    console.log('Page is closed');
-      // });
+   static async injectAllFunctions () {
+      await this.injectFunctionX();
+   }
 
-      // await page.setExtraHTTPHeaders({ 
-      //    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)  Safari/537.36', 
-      //    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 
-      //    'accept-encoding': 'gzip, deflate, br', 
-      //    'accept-language': 'pt-BR,en-US,en;q=0.9,en;q=0.8'
-      // }); 
+   static async injectFunctionX () {
+      await this.page.evaluate(() => {
+         return x = (xpath) => document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      })
    }
 }

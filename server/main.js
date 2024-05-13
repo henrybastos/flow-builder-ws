@@ -2,7 +2,8 @@ import express from "express";
 import { Server } from "socket.io";
 import http from 'http';
 import { Browser } from "./Browser.js";
-import { Operations } from "./Operations.js";
+import { Operation } from "./Operation.js";
+import { SocketHandler } from "./SocketHandler.js";
 
 const PORT = 8080;
 const app = express();
@@ -18,29 +19,14 @@ app.get('/', (req, res) => {
 });
 
 
-io.on('connection', async (socket) => {
-   // Custom method for emitting and logging a payload
-   socket._emit = (event, details) => {
-      socket.emit(event, details);
+io.on('connection', async (_socket) => {
+   const socketHandler = new SocketHandler(_socket);
 
-      for (let [msgType, msg] of Object.entries(details)) {
-         console.log(`[${ msgType.toUpperCase() }] ${ msg }`);
-      }
-   }
+   Operation.emit = socketHandler.emitEvent;
 
-   Operations.setSocket(socket);
-
-   socket.on('chat_message', (msg) => {
-      console.log('[chat_message]', msg);
-   });
-   
-   socket.on('run_flow', async () => {
-      await Browser.launch();
-      await Operations.goto('https://tabler.io/icons/icon/player-play');
-      await Operations.eval('window.location.href');
-
-      socket._emit('operation_log', { done: 'Flow done' });
-   })
+   _socket.on('chat_message', socketHandler.onChatMessage);
+   _socket.on('exec_flows', socketHandler.execFlows);
+   _socket.on('run_flow', socketHandler.runFlow);
 });
 
 server.listen(PORT, () => {
