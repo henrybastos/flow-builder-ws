@@ -1,5 +1,7 @@
 import { Browser } from "./Browser.js";
 import { Operation } from "./Operation.js";
+import { EvalExpression } from "./operations/EvalExpression.js";
+import { Goto } from "./operations/Goto.js";
 
 export class SocketHandler {
    constructor (socket) {
@@ -8,12 +10,12 @@ export class SocketHandler {
    }
 
    /**
-    * Emits an event to the client side with a payload.
-    * @param {'output' | 'operation_log'} event 
-    * @param {any} details 
+    * Emits an event to the client side.
+    * @param {'output' | 'operation_message'} event 
+    * @param {any} [details] 
     */
    emitEvent (event, details) {
-      this.socket.emit(event, { data: details });
+      this.socket.emit(event, details);
 
       for (let [msgType, msg] of Object.entries(details)) {
          console.log(`[SOCKET::${ msgType.toUpperCase() }] ${ msg }`);
@@ -31,8 +33,10 @@ export class SocketHandler {
          console.log(operations);
       }
 
-      // await Browser.launch();
-      // await Operation.goto('https://tabler.io/icons/icon/player-play');
+      await Browser.launch();
+      await Goto.exec('https://tabler.io/icons/icon/player-play');
+      await EvalExpression.exec(`x('//a[@data-title="Copy webfont HTML"]').innerText`);
+
       // const iconWebFont = await Operation.eval(`x('//a[@data-title="Copy webfont HTML"]').innerText`);
       
       // this.emitEvent('output', {

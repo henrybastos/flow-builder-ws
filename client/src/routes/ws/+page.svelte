@@ -42,9 +42,9 @@ import { io } from 'socket.io-client';
       }
    }
 
-   socket.on('operation_log', (details) => {
-      for (let [msgType, msg] of Object.entries(details)) {
-         console.log(`[${ msgType.toUpperCase() }] ${ msg }`);
+   socket.on('operation_message', (details) => {
+      for (let [message_type, message] of Object.entries(details)) {
+         console.log(`[${ message_type.toUpperCase() }] ${ message }`);
       }
    })
 

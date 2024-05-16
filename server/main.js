@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 io.on('connection', async (_socket) => {
    const socketHandler = new SocketHandler(_socket);
 
-   Operation.emit = socketHandler.emitEvent;
+   Operation.socketHandler = socketHandler;
 
    _socket.on('chat_message', socketHandler.onChatMessage);
    _socket.on('exec_flows', socketHandler.execFlows);

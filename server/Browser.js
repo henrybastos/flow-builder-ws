@@ -84,8 +84,7 @@ export class Browser {
    }
 
    static async injectFunctionX () {
-      await this.page.evaluate(() => {
-         return x = (xpath) => document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-      })
+      console.log('[BROWSER] Injecting function X...');
+      await this.page.evaluate(() => x = (xpath) => document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue)
    }
 }
