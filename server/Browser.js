@@ -8,12 +8,13 @@ export class Browser {
    static page;
    /** @type {Array<import('puppeteer').Page>} */
    static pages;
+   static isBrowserOpen = false;
 
    static async launch({ headless } = { headless: false }) {
       try {
          console.log('[BROWSER] Launching browser...');
 
-         if (this.browser === undefined) {
+         if (!this.isBrowserOpen) {
             puppeteer.use(pluginStealth());
    
             this.browser = await puppeteer.launch({
@@ -32,6 +33,7 @@ export class Browser {
    
             this.page.on('close', () => {
                this.browser.close();
+               this.isBrowserOpen = false;
                console.log('[BROWSER] Browser closed');
             });
    
@@ -46,6 +48,7 @@ export class Browser {
 
             // await this.injectAllFunctions();
 
+            this.isBrowserOpen = true;
             console.log(`[BROWSER] New browser launched at ${ this.webSocketEndpoint }`);
          }
       } catch (err) {

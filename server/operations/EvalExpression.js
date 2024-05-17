@@ -1,17 +1,31 @@
 import { Operation } from "../Operation.js";
 
 export class EvalExpression extends Operation {
-    static async exec(expression) {
+    static async exec({ expression }) {
         try {
-           this.emitMessage('info', `Evaluating expression: ${ expression }`);
-            const expressionResult = await this.page.evaluate(expression);
+            this.emitMessage('info', `Evaluating expression: ${ expression }`);
+            const expressionOutput = await this.page.evaluate(expression);
 
-            if (expressionResult) {
-                this.emitOutput(expressionResult);
+            if (expressionOutput) {
+                // if (typeof expressionOutput === 'object') {
+                //     const hasWarning = Object.keys(expressionOutput).some(v => v.match(/warning/gi));
+                //     const hasError = Object.keys(expressionOutput).some(v => v.match(/error/gi));
+
+                //     if (hasWarning) {
+                //         this.emitMessage('error', `[EVAL EXECPTION]: ${ expressionOutput.error }`);
+                //     } 
+                    
+                //     if (hasError) {
+                //         this.emitMessage('warning', `[EVAL WARNING]: ${ expressionOutput.warning }`);
+                //     }
+                // }
+
+                this.emitMessage('info', `Expression result: ${ JSON.stringify(expressionOutput).substring(0, 100) }`);
+                return this.handleOutput(expressionOutput);
             }
         
-            // if (expressionResult) {
-            //     for (let [key, value] of Object.entries(expressionResult)) {
+            // if (expressionOutput) {
+            //     for (let [key, value] of Object.entries(expressionOutput)) {
             //         const exposed = key.match(/@expose:/g);
             //         const query = key.match(/@query:/g);
         
@@ -35,39 +49,39 @@ export class EvalExpression extends Operation {
             //     // if (flags.exposed) {
             //         // Filters out the _expose_key
             //         // const filteredObject = Object.fromEntries(
-            //         //     Object.entries(structuredClone(expressionResult)).filter(([ key, value ]) => key !== '_expose_key' && { [key]: value })
+            //         //     Object.entries(structuredClone(expressionOutput)).filter(([ key, value ]) => key !== '_expose_key' && { [key]: value })
             //         // );
         
-            //         // Adding the _expose_key object, exposes the expressionResult to the browser to be used with eval_expression;
-            //         // if (!await this.curr_page.evaluate(`try { ${ expressionResult?._expose_key } } catch (err) { false }`)) {
+            //         // Adding the _expose_key object, exposes the expressionOutput to the browser to be used with eval_expression;
+            //         // if (!await this.curr_page.evaluate(`try { ${ expressionOutput?._expose_key } } catch (err) { false }`)) {
             //         // }
             //         // await this.curr_page.evaluate(`_$fb = { ..._$fb, ...(${ JSON.stringify(filteredObject)}) }`);
-            //         // await this.curr_page.evaluate(`console.log("[FB_SYS] Exposed key: ${expressionResult}")`);
+            //         // await this.curr_page.evaluate(`console.log("[FB_SYS] Exposed key: ${expressionOutput}")`);
             //     // }
         
-            //     if (expressionResult?.error) {
+            //     if (expressionOutput?.error) {
             //         this.logger.logEvent("operation_log", {
-            //             message: `[EVAL EXECPTION]: ${ expressionResult.error }`,
+            //             message: `[EVAL EXECPTION]: ${ expressionOutput.error }`,
             //             status_message: "error"
             //         })
         
-            //         return expressionResult;
-            //     } else if (expressionResult?.warning) {
+            //         return expressionOutput;
+            //     } else if (expressionOutput?.warning) {
             //         this.logger.logEvent("operation_log", {
-            //             message: `[EVAL WARNING]: ${ expressionResult.warning }`,
+            //             message: `[EVAL WARNING]: ${ expressionOutput.warning }`,
             //             status_message: "warning"
             //         })
         
-            //         return expressionResult;
+            //         return expressionOutput;
             //     } 
         
             //     let logMessage;
                 
-            //     if (typeof expressionResult === 'object') {
-            //         logMessage = JSON.stringify(expressionResult);
-            //     } else if (['string', 'number', 'boolean'].includes(typeof expressionResult)) { 
-            //         logMessage = expressionResult.toString();
-            //         expressionResult = { [`AUTO_${ Math.random().toString().slice(3, 12) }`]: expressionResult }
+            //     if (typeof expressionOutput === 'object') {
+            //         logMessage = JSON.stringify(expressionOutput);
+            //     } else if (['string', 'number', 'boolean'].includes(typeof expressionOutput)) { 
+            //         logMessage = expressionOutput.toString();
+            //         expressionOutput = { [`AUTO_${ Math.random().toString().slice(3, 12) }`]: expressionOutput }
             //     } 
         
             //     this.logger.logEvent("operation_log", {
@@ -75,11 +89,11 @@ export class EvalExpression extends Operation {
             //         status_message: "info"
             //     })
         
-            //     console.log('[EVAL EXPRESSION] Result: ', expressionResult);
-            //     return expressionResult;
+            //     console.log('[EVAL EXPRESSION] Result: ', expressionOutput);
+            //     return expressionOutput;
             // }
         } catch (error) {
-           this.emitMessage('error', 'Impossible to perform "goto" operation');
+           this.emitMessage('error', `An error occurred when evaluating expression ${ expression }`);
            console.error(error);
         }
     }

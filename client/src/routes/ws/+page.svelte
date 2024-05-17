@@ -1,6 +1,7 @@
 <script>
+   import { io } from 'socket.io-client';
    import Button from '$lib/components/ui/button/button.svelte';
-import { io } from 'socket.io-client';
+   
    const PORT = 8080;
    const socket = io(`ws://localhost:${ PORT }`);
    const PAYLOAD = {
@@ -16,12 +17,32 @@ import { io } from 'socket.io-client';
             {
                "command": "goto",
                "enabled": true,
-               "target": ""
+               "target": "https://tabler.io/icons"
             },
             {
                "command": "eval_expression",
                "enabled": true,
-               "expression": "x('//a[@data-title=\"Copy webfont HTML\"]').innerText"
+               "expression": "x(`//h1`).innerText"
+            },
+            {
+               "command": "eval_expression",
+               "enabled": true,
+               "expression": "x(`//h1`).innerText.split('')"
+            },
+            {
+               "command": "eval_expression",
+               "enabled": true,
+               "expression": "x(`//h1`).innerText.split('').length"
+            },
+            {
+               "command": "eval_expression",
+               "enabled": true,
+               "expression": "(() => ({ name: 'Henry' }))()"
+            },
+            {
+               "command": "eval_expression",
+               "enabled": true,
+               "expression": "{ name: 'Henry' }"
             }
          ]
       },
