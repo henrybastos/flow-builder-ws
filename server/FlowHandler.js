@@ -1,4 +1,5 @@
 import { Browser } from "./Browser.js";
+import { Click } from "./operations/Click.js";
 import { EvalExpression } from "./operations/EvalExpression.js";
 import { Goto } from "./operations/Goto.js";
 
@@ -9,7 +10,8 @@ export class FlowHandler {
 
    static operations = {
       goto: Goto,
-      eval_expression: EvalExpression
+      eval_expression: EvalExpression,
+      click: Click
    };
 
    /**

@@ -22,4 +22,16 @@ export class Operation extends Browser {
          return { data: output };
       }
    }
+
+   static async getElements (target, timeout = 15000) {
+      const element = await this.waitForElement({ target, timeout });
+      
+      if (element) {
+         return await this.page.$$(`xpath/${ target }`);
+      }
+  }
+
+   static async waitForElement ({ target, timeout = 15000 }) {
+      return await this.page.waitForSelector(`xpath/${ target }`, { timeout });
+   }
 }

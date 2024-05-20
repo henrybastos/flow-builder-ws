@@ -43,6 +43,11 @@
                "command": "eval_expression",
                "enabled": true,
                "expression": "{ name: 'Henry' }"
+            },
+            {
+               "command": "click",
+               "enabled": true,
+               "target": "(//sa[@href=\"https://github.com/tabler/tabler-icons\"])[1]"
             }
          ]
       },

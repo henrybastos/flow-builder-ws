@@ -1,11 +1,19 @@
-import { Operation } from "../Operation";
+import { Operation } from "../Operation.js";
 
-class Click extends Operation {
+export class Click extends Operation {
    static async exec ({ target }) {
-      try {
+      /** @type {Array<import('puppeteer').ElementHandle>} */
+      const [element] = await this.getElements(target);
 
-      } catch (err) {
-         
+      if (element) {
+         try {
+            await element.click();
+         } catch (err) {
+            console.error(err);
+            this.emitMessage('error', `Unable to click on element ${ target }`);
+         }
+      } else {
+         this.emitMessage('error', `Element ${ target } not found.`);
       }
    }
 }
