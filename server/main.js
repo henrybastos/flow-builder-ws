@@ -19,8 +19,10 @@ app.get('/', (req, res) => {
 
 io.on('connection', async (socket) => {
    FlowHandler.setSocket(socket);
+
    socket.on('exec_flows', (data) => FlowHandler.execFlows(data));
 });
+
 
 server.listen(PORT, () => {
    console.log(`Listening on http://localhost:${PORT}`);

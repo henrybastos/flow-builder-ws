@@ -1,4 +1,5 @@
 import { Browser } from "./Browser.js";
+import { EnvParser } from "./EnvParser.js";
 import { FlowHandler } from "./FlowHandler.js";
 
 export class Operation extends Browser {
@@ -11,15 +12,19 @@ export class Operation extends Browser {
       FlowHandler.emitEvent('operation_message', { [message_type]: message });
    }
 
+   static setGlobalEnv (data) {
+      FlowHandler.setGlobalEnv(data);
+   }
+
    static emitOutput (output) {
       FlowHandler.emitEvent('output', output);
    }
 
    static handleOutput (output) {
       if (typeof output === 'object' && !Array.isArray(output)) {
-         return output;
+         return EnvParser.parse(output);
       } else {
-         return { data: output };
+         return EnvParser.parse({ data: output });
       }
    }
 
@@ -32,6 +37,11 @@ export class Operation extends Browser {
   }
 
    static async waitForElement ({ target, timeout = 15000 }) {
-      return await this.page.waitForSelector(`xpath/${ target }`, { timeout });
+      try {
+         this.emitMessage('info', `Waiting for selector: ${ target } ...`);
+         return await this.page.waitForSelector(`xpath/${ target }`, { timeout });
+      } catch (err) {
+         this.emitMessage('error', `[FAILED] Wait for selector: ${ target }`)
+      }
    }
 }

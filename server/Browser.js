@@ -72,7 +72,6 @@ export class Browser {
       }
 
       this.page = await this.browser.newPage();
-
       // page.setViewport({ width: 1366, height: 720 });
 
       // // FIXME
@@ -84,10 +83,16 @@ export class Browser {
 
    static async injectAllFunctions () {
       await this.injectFunctionX();
+      await this.injectFunctionEnv();
    }
 
    static async injectFunctionX () {
-      console.log('[BROWSER] Injecting function X...');
+      console.log('[BROWSER] Injecting function x...');
       await this.page.evaluate(() => x = (xpath) => document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue)
+   }
+
+   static async injectFunctionEnv () {
+      console.log('[BROWSER] Injecting function env...');
+      await this.page.evaluate(() => env = (obj) => obj)
    }
 }

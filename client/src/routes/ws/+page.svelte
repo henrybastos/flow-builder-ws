@@ -27,28 +27,33 @@
             {
                "command": "eval_expression",
                "enabled": true,
-               "expression": "x(`//h1`).innerText.split('')"
-            },
-            {
-               "command": "eval_expression",
-               "enabled": true,
-               "expression": "x(`//h1`).innerText.split('').length"
-            },
-            {
-               "command": "eval_expression",
-               "enabled": true,
-               "expression": "(() => ({ name: 'Henry' }))()"
-            },
-            {
-               "command": "eval_expression",
-               "enabled": true,
-               "expression": "{ name: 'Henry' }"
-            },
-            {
-               "command": "click",
-               "enabled": true,
-               "target": "(//sa[@href=\"https://github.com/tabler/tabler-icons\"])[1]"
+               "expression": "env({ favorite_game: '{{ game }}' })"
             }
+            // {
+            //    "command": "eval_expression",
+            //    "enabled": true,
+            //    "expression": "x(`//h1`).innerText.split('')"
+            // },
+            // {
+            //    "command": "eval_expression",
+            //    "enabled": true,
+            //    "expression": "x(`//h1`).innerText.split('').length"
+            // },
+            // {
+            //    "command": "eval_expression",
+            //    "enabled": true,
+            //    "expression": "(() => ({ name: 'Henry' }))()"
+            // },
+            // {
+            //    "command": "eval_expression",
+            //    "enabled": true,
+            //    "expression": "{ name: 'Henry' }"
+            // },
+            // {
+            //    "command": "click",
+            //    "enabled": true,
+            //    "target": "(//sa[@href=\"https://github.com/tabler/tabler-icons\"])[1]"
+            // }
          ]
       },
       "config": {
@@ -84,7 +89,7 @@
       <i class="ti ti-player-play mr-2"></i> Run
    </Button>
 
-   <Button on:click={() => socket.emit('chat_message', { msg: 'Hello world!' })} variant="outline" class="text-base">
+   <!-- <Button on:click={() => socket.emit('chat_message', { msg: 'Hello world!' })} variant="outline" class="text-base">
       <i class="ti ti-message mr-2"></i> Send message
-   </Button>
+   </Button> -->
 </div>
