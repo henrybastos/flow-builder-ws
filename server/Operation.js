@@ -12,13 +12,9 @@ export class Operation extends Browser {
       FlowHandler.emitEvent('operation_message', { [message_type]: message });
    }
 
-   static setGlobalEnv (data) {
-      FlowHandler.setGlobalEnv(data);
-   }
-
-   static emitOutput (output) {
-      FlowHandler.emitEvent('output', output);
-   }
+   // static emitOutput (output) {
+   //    FlowHandler.emitEvent('output', output);
+   // }
 
    static handleOutput (output) {
       if (typeof output === 'object' && !Array.isArray(output)) {

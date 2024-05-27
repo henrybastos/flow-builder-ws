@@ -9,7 +9,7 @@ export class EnvParser {
       for (let [o_key, o_value] of Object.entries(output)) {
          outputBuffer[this.parseString(o_key)] = this.parseString(o_value);
          console.log(`[ENV PARSER::STRING] ${outputBuffer[o_key]}`);
-         FlowHandler.setGlobalEnv({ [this.removePrefixes(o_key)]: outputBuffer[o_key] });
+         FlowHandler.setEnv({ [this.removePrefixes(o_key)]: outputBuffer[o_key] });
       }
       
       return outputBuffer;
@@ -17,7 +17,6 @@ export class EnvParser {
 
    static parseString (str) {
       if (str.match(/(?<={{)[^{}]+(?=}})/g)) {
-         // this.pickEnv(str);
          str = str.replace(/{{([^{}]+)}}/g, (_, cgs) => {
             const { raw, global, kebab, snake } = this.parseFlags(cgs);
             

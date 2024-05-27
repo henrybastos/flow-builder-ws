@@ -13,7 +13,7 @@ export class FlowHandler {
       this.socket = socket;
    }
 
-   static setGlobalEnv(payload) {
+   static setEnv(payload) {
       this.emitEvent('operation_message', { info: 'Setting global env...' })
       for (let [o_key, o_value] of Object.entries(payload)) {
          // console.log(o_key, o_value);
@@ -47,16 +47,9 @@ export class FlowHandler {
       this.globalPayload = structuredClone(payload);
       await Browser.launch();
 
-      // TEST
-      // this.setGlobalEnv({ game: 'Valheim' });
-      // this.setGlobalEnv({ second_game: '{{ game }}' });
-
       const output = await this.operations.run_flow.exec();
 
       this.emitEvent('operation_message', { flow: 'Processing done!' })
       this.emitEvent('output', { flows_output: output });
-      // this.runFlow({ flow: payload.flows.main_flow, env: this.payload });
-      // this.emitEvent('output', { flows_output: flowsOutput });
-      // this.emitEvent('operation_message', { 'info': 'Processing done!' });
    }
 }

@@ -16,7 +16,7 @@
             {
                "test": "Valheim",
                "favorite_game": "{{ test }}",
-               "name": "Henry"
+               "name": "Henry Bastos"
             },
             {
                "favorite_game": "Koikatsu",

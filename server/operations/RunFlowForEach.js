@@ -9,11 +9,10 @@ export class RunFlowForEach extends Operation {
     */
    static async exec({ flow, env_scope }) {
       try {
-         let flowsOutput = [];
+         let flowsOutput = {};
          flowsOutput[env_scope] = structuredClone(FlowHandler.globalPayload.env[env_scope]) || [];
          
          for (let [index, env] of Object.entries(FlowHandler.globalPayload.env[env_scope])) {
-            console.log(index, env);
             FlowHandler.payload.env = env;
             flowsOutput[env_scope][index] = structuredClone(FlowHandler.globalPayload.env[env_scope][index]) || {};
 
