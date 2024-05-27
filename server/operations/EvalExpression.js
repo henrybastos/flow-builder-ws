@@ -20,7 +20,6 @@ export class EvalExpression extends Operation {
                 //     }
                 // }
 
-                this.setGlobalEnv({ game: 'Valheim' });
                 this.emitMessage('info', `Expression result: ${ JSON.stringify(expressionOutput).substring(0, 100) }`);
                 return this.handleOutput(expressionOutput);
             }

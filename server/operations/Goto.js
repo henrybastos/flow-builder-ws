@@ -7,7 +7,7 @@ export class Goto extends Operation {
     */
    static async exec({ target }) {
       try {
-         this.emitMessage('info', `Going to ${ target }`);
+         this.emitMessage('info', `Going to ${ target } ...`);
          await this.page.goto(target, { waitUntil: 'networkidle0' });
          await this.injectAllFunctions();
       } catch (error) {

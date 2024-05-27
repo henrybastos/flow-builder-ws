@@ -10,7 +10,19 @@
             "pages": {
                "main_page": "main_page"
             }
-         }
+         },
+         "best_game": "Rocket League",
+         "users": [
+            {
+               "test": "Valheim",
+               "favorite_game": "{{ test }}",
+               "name": "Henry"
+            },
+            {
+               "favorite_game": "Koikatsu",
+               "name": "Heitor"
+            }
+         ]
       },
       "flows": {
          "main_flow": [
@@ -25,35 +37,23 @@
                "expression": "x(`//h1`).innerText"
             },
             {
+               "command": "run_flow_for_each",
+               "enabled": true,
+               "flow": "user_flow",
+               "env_scope": "users"
+            }
+         ],
+         "user_flow": [
+            {
                "command": "eval_expression",
                "enabled": true,
-               "expression": "env({ favorite_game: '{{ game }}' })"
+               "expression": "env({ '{{ @kebab:name }}-caption': 'My name is {{ name }} and my favorite game is {{ favorite_game }}!' })"
+            },
+            {
+               "command": "eval_expression",
+               "enabled": true,
+               "expression": "env({ '{{ @global:@snake:best_game }}_caption': 'My name is {{ name }} and everybody likes {{ @global:best_game }}!' })"
             }
-            // {
-            //    "command": "eval_expression",
-            //    "enabled": true,
-            //    "expression": "x(`//h1`).innerText.split('')"
-            // },
-            // {
-            //    "command": "eval_expression",
-            //    "enabled": true,
-            //    "expression": "x(`//h1`).innerText.split('').length"
-            // },
-            // {
-            //    "command": "eval_expression",
-            //    "enabled": true,
-            //    "expression": "(() => ({ name: 'Henry' }))()"
-            // },
-            // {
-            //    "command": "eval_expression",
-            //    "enabled": true,
-            //    "expression": "{ name: 'Henry' }"
-            // },
-            // {
-            //    "command": "click",
-            //    "enabled": true,
-            //    "target": "(//sa[@href=\"https://github.com/tabler/tabler-icons\"])[1]"
-            // }
          ]
       },
       "config": {

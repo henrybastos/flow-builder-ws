@@ -5,7 +5,7 @@ import { FlowHandler } from "./FlowHandler.js";
 export class Operation extends Browser {
    /**
     * Emits a message to the client. The message could be an error, a warning or just an information about the operation.
-    * @param {'error' | 'info' | 'warning'} message_type 
+    * @param {'error' | 'info' | 'warning' | 'flow'} message_type 
     * @param {string} message
     */
    static emitMessage (message_type, message) {
@@ -22,9 +22,9 @@ export class Operation extends Browser {
 
    static handleOutput (output) {
       if (typeof output === 'object' && !Array.isArray(output)) {
-         return EnvParser.parse(output);
+         return EnvParser.parsePlaceholders(output);
       } else {
-         return EnvParser.parse({ data: output });
+         return EnvParser.parsePlaceholders({ data: output });
       }
    }
 

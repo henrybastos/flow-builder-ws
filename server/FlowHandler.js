@@ -2,27 +2,31 @@ import { Browser } from "./Browser.js";
 import { Click } from "./operations/Click.js";
 import { EvalExpression } from "./operations/EvalExpression.js";
 import { Goto } from "./operations/Goto.js";
+import { RunFlow } from "./operations/RunFlow.js";
+import { RunFlowForEach } from "./operations/RunFlowForEach.js";
 
 export class FlowHandler {
    static payload;
+   static globalPayload;
 
    static setSocket (socket) {
       this.socket = socket;
    }
 
    static setGlobalEnv(payload) {
-      this.emitEvent('operation_message', { info: 'Setting lobal env...' })
+      this.emitEvent('operation_message', { info: 'Setting global env...' })
       for (let [o_key, o_value] of Object.entries(payload)) {
          // console.log(o_key, o_value);
          this.payload.env[o_key] = o_value;
       }
-      console.log(this.payload.env);
    }
 
    static operations = {
       goto: Goto,
       eval_expression: EvalExpression,
-      click: Click
+      click: Click,
+      run_flow: RunFlow,
+      run_flow_for_each: RunFlowForEach
    };
 
    /**
@@ -38,22 +42,21 @@ export class FlowHandler {
       }
    }
 
-   static async runFlow ({ payload, env }) {
-      console.log(payload, env);
-   }
-
    static async execFlows ({ payload }) {
-      this.payload = payload;
-      let flowsOutput = [];
+      this.payload = structuredClone(payload);
+      this.globalPayload = structuredClone(payload);
       await Browser.launch();
 
-      for (let op of payload.flows.main_flow) {
-         const output = await this.operations[op.command].exec(op);
-         console.log(output);
-         flowsOutput.push(output);
-      }
-      
-      this.emitEvent('output', { flows_output: flowsOutput });
-      this.emitEvent('operation_message', { 'info': 'Processing done!' })
+      // TEST
+      // this.setGlobalEnv({ game: 'Valheim' });
+      // this.setGlobalEnv({ second_game: '{{ game }}' });
+
+      const output = await this.operations.run_flow.exec();
+
+      this.emitEvent('operation_message', { flow: 'Processing done!' })
+      this.emitEvent('output', { flows_output: output });
+      // this.runFlow({ flow: payload.flows.main_flow, env: this.payload });
+      // this.emitEvent('output', { flows_output: flowsOutput });
+      // this.emitEvent('operation_message', { 'info': 'Processing done!' });
    }
 }
