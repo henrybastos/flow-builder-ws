@@ -73,6 +73,7 @@
       @apply text-teal-500;
   }
 
+  .tag_flow,
   .tag_running {
       @apply text-teal-500;
   }

@@ -12,32 +12,28 @@ export class Operation extends Browser {
       FlowHandler.emitEvent('operation_message', { [message_type]: message });
    }
 
-   // static emitOutput (output) {
-   //    FlowHandler.emitEvent('output', output);
-   // }
+   static async handleOutput (output) {
+      for (let [key, value] of Object.entries(output)) {
+         const { raw, exposed } = EnvParser.parseFlags(key);
 
-   static handleOutput (output) {
+         if (exposed) {
+            console.log(`[OPERATION] Exposing key: ${ raw }`);
+            
+            await this.page.evaluate((_key, _value) => {
+               try {
+                  return __fb = { ...__fb, [_key]: _value }
+               } catch (err) {
+                  console.warn('[FB] Declaring and defining __fb ...');
+                  return __fb = { [_key]: _value }
+               };
+            }, raw, value);
+         }
+      }
+
       if (typeof output === 'object' && !Array.isArray(output)) {
          return EnvParser.parsePlaceholders(output);
       } else {
          return EnvParser.parsePlaceholders({ data: output });
-      }
-   }
-
-   static async getElements (target, timeout = 15000) {
-      const element = await this.waitForElement({ target, timeout });
-      
-      if (element) {
-         return await this.page.$$(`xpath/${ target }`);
-      }
-  }
-
-   static async waitForElement ({ target, timeout = 15000 }) {
-      try {
-         this.emitMessage('info', `Waiting for selector: ${ target } ...`);
-         return await this.page.waitForSelector(`xpath/${ target }`, { timeout });
-      } catch (err) {
-         this.emitMessage('error', `[FAILED] Wait for selector: ${ target }`)
       }
    }
 }

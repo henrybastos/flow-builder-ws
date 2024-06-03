@@ -52,7 +52,12 @@
             {
                "command": "eval_expression",
                "enabled": true,
-               "expression": "env({ '{{ @global:@snake:best_game }}_caption': 'My name is {{ name }} and everybody likes {{ @global:best_game }}!' })"
+               "expression": "env({ '{{ @exposed:@global:@snake:best_game }}_caption': 'My name is {{ name }} and everybody likes {{ @global:best_game }}!' })"
+            },
+            {
+               "command": "eval_expression",
+               "enabled": true,
+               "expression": "env({ '@exposed:rapper': 'Eminem' })"
             }
          ]
       },
@@ -77,19 +82,25 @@
       for (let [message_type, message] of Object.entries(details)) {
          console.log(`[${ message_type.toUpperCase() }] ${ message }`);
       }
-   })
+   });
+   
+   socket.on("disconnect", () => {
+      console.log('[WS] Disconnected');
+   });
 
    socket.on('output', (data) => {
       console.log('[OUTPUT]', data);
    })
+
+   function executeFlows () {
+      socket.connect();
+      console.log(`[WS] Connected at ${ socket.id }`);
+      socket.emit('exec_flows', { payload: PAYLOAD  })
+   }
 </script>
 
 <div class="space-x-1">
-   <Button on:click={() => socket.emit('exec_flows', { payload: PAYLOAD  })} class="text-base">
-      <i class="ti ti-player-play mr-2"></i> Run
+   <Button on:click={executeFlows} class="text-base">
+      <i class="ti ti-player-play mr-2"></i> Execute
    </Button>
-
-   <!-- <Button on:click={() => socket.emit('chat_message', { msg: 'Hello world!' })} variant="outline" class="text-base">
-      <i class="ti ti-message mr-2"></i> Send message
-   </Button> -->
 </div>

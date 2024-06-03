@@ -16,13 +16,11 @@ app.get('/', (req, res) => {
    res.json({ status: 200 });
 });
 
-
 io.on('connection', async (socket) => {
    FlowHandler.setSocket(socket);
-
+   console.log('New connection:', socket.id);
    socket.on('exec_flows', (data) => FlowHandler.execFlows(data));
 });
-
 
 server.listen(PORT, () => {
    console.log(`Listening on http://localhost:${PORT}`);

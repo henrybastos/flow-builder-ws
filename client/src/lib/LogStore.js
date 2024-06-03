@@ -22,9 +22,9 @@ export const TAGS = {
       type: 'timer',
       label: '[ELAPSED TIME]'
    },
-   running: {
-      type: 'running',
-      label: '[RUNNING]'
+   flow: {
+      type: 'flow',
+      label: '[FLOW]'
    }
 }
 
@@ -42,29 +42,35 @@ function createLogger () {
     */
    function logMessage (_message, _tag) {
       update(_log => {
-         const new_message = {
-            [genUUID()]: {
-               message: _message,
-               tag: {
-                  type: _tag.type,
-                  label: _tag.label
-               },
-               date: new Date().toLocaleDateString(),
-               time: new Date().toLocaleTimeString()
-            }
-         };
-
-         const updated_log = {
-            ..._log,
-            messages: {
-               ..._log.messages,
-               ...new_message
-            }
-         };
-
-         localStorage.setItem('logs', JSON.stringify(updated_log));
-
-         return updated_log;
+         console.log(_message, _tag);
+         
+         if (Object.keys(TAGS).includes(_tag.type)) {
+            const new_message = {
+               [genUUID()]: {
+                  message: _message,
+                  tag: {
+                     type: _tag.type,
+                     label: _tag.label
+                  },
+                  date: new Date().toLocaleDateString(),
+                  time: new Date().toLocaleTimeString()
+               }
+            };
+   
+            const updated_log = {
+               ..._log,
+               messages: {
+                  ..._log.messages,
+                  ...new_message
+               }
+            };
+   
+            localStorage.setItem('logs', JSON.stringify(updated_log));
+   
+            return updated_log;
+         } else {
+            return _log;
+         }
       })
    }
 

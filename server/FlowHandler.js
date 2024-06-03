@@ -1,9 +1,11 @@
 import { Browser } from "./Browser.js";
 import { Click } from "./operations/Click.js";
+import { CloseBrowser } from "./operations/CloseBrowser.js";
 import { EvalExpression } from "./operations/EvalExpression.js";
 import { Goto } from "./operations/Goto.js";
 import { RunFlow } from "./operations/RunFlow.js";
 import { RunFlowForEach } from "./operations/RunFlowForEach.js";
+import { WaitForDOM } from "./operations/WaitForDOM.js";
 
 export class FlowHandler {
    static payload;
@@ -26,7 +28,9 @@ export class FlowHandler {
       eval_expression: EvalExpression,
       click: Click,
       run_flow: RunFlow,
-      run_flow_for_each: RunFlowForEach
+      run_flow_for_each: RunFlowForEach,
+      wait_for_dom: WaitForDOM,
+      close_browser: CloseBrowser
    };
 
    /**
@@ -36,9 +40,11 @@ export class FlowHandler {
     */
    static emitEvent (event, details) {
       this.socket.emit(event, details);
-
-      for (let [msgType, msg] of Object.entries(details)) {
-         console.log(`[SOCKET::${ msgType.toUpperCase() }] ${ msg }`);
+      
+      if (details) {   
+         for (let [msgType, msg] of Object.entries(details)) {
+            console.log(`[SOCKET::${ msgType.toUpperCase() }] ${ msg }`);
+         }
       }
    }
 
@@ -47,9 +53,12 @@ export class FlowHandler {
       this.globalPayload = structuredClone(payload);
       await Browser.launch();
 
+      this.emitEvent('main_flow_start', { flow: 'Executing Main Flow...' });
+
       const output = await this.operations.run_flow.exec();
 
-      this.emitEvent('operation_message', { flow: 'Processing done!' })
       this.emitEvent('output', { flows_output: output });
+      this.emitEvent('operation_message', { flow: 'Processing done!' });
+      this.emitEvent('main_flow_end');
    }
 }

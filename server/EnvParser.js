@@ -49,7 +49,7 @@ export class EnvParser {
    }
 
    static removePrefixes(key) {
-      return key.split(':').splice(-1)[0].trim();
+      return key.match(/(?<=({{)?)[^{}]+(?=(}})?)/g)[0].split(':').splice(-1)[0].trim();
    }
 
    /**

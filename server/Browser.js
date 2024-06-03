@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer-extra";
 import pluginStealth from 'puppeteer-extra-plugin-stealth';
+import { FlowHandler } from "./FlowHandler.js";
 
 export class Browser {
    /** @type {import('puppeteer').Browser} */
@@ -81,9 +82,27 @@ export class Browser {
       // });
    }
 
+   static async getElements (target) {
+      const element = await this.waitForElement({ target });
+      
+      if (element) {
+         return await this.page.$$(`xpath/${ target }`);
+      }
+   }
+
+   static async waitForElement ({ target, timeout = 15000 }) {
+      try {
+         FlowHandler.emitEvent('operation_message', { info: `Waiting for selector: ${ target } ...` });
+         return await this.page.waitForSelector(`xpath/${ target }`, { timeout });
+      } catch (err) {
+         FlowHandler.emitEvent('operation_message', { error: `[FAILED] Wait for selector: ${ target }` });
+      }
+   }
+
    static async injectAllFunctions () {
       await this.injectFunctionX();
       await this.injectFunctionEnv();
+      await this.injectFunctionAsyncEval();
    }
 
    static async injectFunctionX () {
@@ -94,5 +113,52 @@ export class Browser {
    static async injectFunctionEnv () {
       console.log('[BROWSER] Injecting function env...');
       await this.page.evaluate(() => env = (obj) => obj)
+   }
+   
+   static async injectFunctionAsyncEval () {
+      console.log('[BROWSER] Injecting function async eval...');
+      await this.page.evaluate(() => async_eval = async (cb, options) => {
+         let attempt = 0;
+         let evalReturnValue = 'No response from async_eval Promise.';
+         console.log(cb, options);
+
+         options.maxAttempts = options?.maxAttempts || 15;
+         options.interval = options?.interval || 1000;
+     
+         if (cb) {
+             evalReturnValue = await new Promise((resolve) => {
+                 const timeInterval = setInterval(() => {
+                     attempt++;
+                     console.log(`Attempt ${attempt} of ${options.maxAttempts}`);
+     
+                     const cbResolve = (value) => {
+                         clearInterval(timeInterval);
+                         resolve(value);
+                     }
+     
+                     try {
+                         const cbError = cb(cbResolve);
+     
+                         if (attempt >= options.maxAttempts) {
+                             clearInterval(timeInterval);
+                             if (cbError) { 
+                                 resolve(cbError); 
+                             } else {
+                                 resolve(options?.exception || { '@private:warning': `Max attempts reached: ${options.maxAttempts}` });
+                             }
+                         }
+                     } catch (err) {
+                         resolve({ error: err });
+                         clearInterval(timeInterval);
+                     }
+                 }, options.interval)
+             });
+         } else {
+             evalReturnValue = 'No callback function found to execute on the async_eval function.'
+         }
+     
+         console.log('[ASYNC EVAL RESULT]', evalReturnValue);
+         return evalReturnValue;
+     })
    }
 }

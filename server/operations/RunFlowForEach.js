@@ -16,7 +16,7 @@ export class RunFlowForEach extends Operation {
             FlowHandler.payload.env = env;
             flowsOutput[env_scope][index] = structuredClone(FlowHandler.globalPayload.env[env_scope][index]) || {};
 
-            this.emitMessage('flow', `Running flow ${ flow } (${ index + 1 }/${ FlowHandler.globalPayload.env[env_scope].length }) ...`);
+            this.emitMessage('flow', `[RUNNING FLOW::${ flow }] (${ parseInt(index) + 1 }/${ FlowHandler.globalPayload.env[env_scope].length }) ...`);
    
             for (let op of FlowHandler.payload.flows[flow]) {
                if (op.enabled) {

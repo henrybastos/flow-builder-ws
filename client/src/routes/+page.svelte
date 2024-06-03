@@ -7,7 +7,6 @@
    import { LOGGER, TAGS } from "$lib/LogStore";
    import * as Card from '$lib/components/ui/card';
    import AlertStopExecution from '$lib/components/compose/AlertStopExecution.svelte';
-   import Button from '$lib/components/ui/button/button.svelte';
    import FlowDropdown from '$lib/components/v2/FlowDropdown.svelte';
    import FlowOperation from '$lib/components/v2/FlowOperation.svelte';
    import Ihi from '$lib/components/v2/Ihi.svelte';
@@ -25,6 +24,8 @@
    import { Skeleton } from '$lib/components/ui/skeleton';
    import Navbar from '$lib/components/v2/Navbar.svelte';
    import PresetsBrowserPanel from '$lib/components/v2/PresetsBrowser/PresetsBrowserPanel.svelte';
+   import GenSchema from '$lib/modules/GenSchema.svelte';
+   import { io } from 'socket.io-client';
 
    let isPayloadRunning = false;
    
@@ -35,6 +36,7 @@
    let isAddFlowPanelOpen = false;
    let isAddOperationPanelOpen = false;
    let isPresetsBrowserPanelOpen = false;
+   let isGenSchemaPanelOpen = false;
 
    let footerMessage = writable('');
    let footerFixedMessage = writable('');
@@ -43,6 +45,9 @@
    let activeFlow;
    let draggyRoot;
    let hasLoadFinished = false;
+   
+   const PORT = 8080;
+   const socket = io(`ws://localhost:${ PORT }`);
 
    const DEFAULT_PAYLOAD = {
       "env": {
@@ -90,14 +95,14 @@
          isPayloadRunning = true;
          setFooterMessage('Executing payload...', { loading: true, fixed: true });
 
-         const fetchError = await ServerHandler.sendFlowPayload(PAYLOAD);
+         // const fetchError = await ServerHandler.sendFlowPayload(PAYLOAD);
          
-         if (fetchError) { 
-            console.log("ERROR", fetchError);
-            isPayloadRunning = false;
-            setFooterMessage('Payload failed to execute.', { fixed: true });
-            reject(fetchError);
-         }
+         // if (fetchError) { 
+         //    console.log("ERROR", fetchError);
+         //    isPayloadRunning = false;
+         //    setFooterMessage('Payload failed to execute.', { fixed: true });
+         //    reject(fetchError);
+         // }
          
          isPayloadRunning = false;
          resolve();
@@ -197,6 +202,56 @@
       PAYLOAD = detail.payload;
    }
 
+   /** [WEB SOCKET START] **/
+   // Custom method for emitting and logging a payload
+   socket._emit = (event, details) => {
+      socket.emit(event, details);
+
+      for (let [msgType, msg] of Object.entries(details)) {
+         console.log(`[${ msgType.toUpperCase() }] ${ msg }`);
+      }
+   }
+   
+   socket.on("disconnect", () => {
+      console.log('[WS] Disconnected');
+   });
+
+   socket.on('output', (data) => {
+      console.log('[OUTPUT]', data);
+   })
+
+   function executeFlows () {
+      if (PAYLOAD.flows.main_flow.length === 0) {
+         toast.error('The Main Flow cannot be empty.');
+         return;
+      }
+
+      const sendPayloadPromise = new Promise(async (resolve, reject) => {
+         isPayloadRunning = true;
+         setFooterMessage('Executing payload...', { loading: true, fixed: true });
+
+         socket.connect();
+         console.log(`[WS] Connected at ${ socket.id }`);
+         socket.emit('exec_flows', { payload: PAYLOAD  });
+
+         socket.on('main_flow_end', () => {
+            isPayloadRunning = false;
+            resolve();
+         });
+      })
+
+      toast.promise(sendPayloadPromise, {
+         loading: 'Executando carga...',
+         success: () => {
+            isPayloadRunning = false;
+            setFooterMessage('Payload executed.', { loading: false, fixed: true });
+            return 'Carga executada'
+         },
+         error: 'Ocorreu um erro. Cheque os logs.'
+      });
+   }
+   /** [WEB SOCKET END] **/
+
    onMount(() => {
       // console.log('LS PAYLOAD', localStorage.getItem('tempPayload'), PAYLOAD);
       loadPayloadFromLS();
@@ -230,18 +285,32 @@
    <title>Flow Builder</title>
 </svelte:head>
 
-<main class="flex flex-col w-screen overflow-hidden items-center">
-   <Navbar 
-      bind:isPresetsBrowserPanelOpen 
-      bind:isStopExecutionPanelOpen 
-      bind:isLogsPanelOpen 
-      bind:isOutputPanelOpen 
-      bind:isEditPayloadPanelOpen 
-      bind:isAddFlowPanelOpen
-      bind:isPayloadRunning 
-      {runCombinedPayload} {savePayloadToLS} {loadBlankPayload}
-   />
+{#if env?.PUBLIC_ENABLE_MJ}
+   <Ihi />
+{/if}
 
+<Navbar 
+   bind:isPresetsBrowserPanelOpen 
+   bind:isStopExecutionPanelOpen 
+   bind:isLogsPanelOpen 
+   bind:isOutputPanelOpen 
+   bind:isEditPayloadPanelOpen 
+   bind:isAddFlowPanelOpen
+   bind:isPayloadRunning 
+   bind:isGenSchemaPanelOpen 
+   runCombinedPayload={executeFlows} {savePayloadToLS} {loadBlankPayload}
+/>
+
+<AlertStopExecution bind:isPanelOpen={isStopExecutionPanelOpen} stopAction={stopPayloadRequest} />
+<PayloadOutputPanel {socket} {toast} bind:isPanelOpen={isOutputPanelOpen} bind:isPayloadRunning />
+<PayloadLogsPanel {socket} {toast} bind:isPanelOpen={isLogsPanelOpen} bind:isPayloadRunning />
+<EditPayloadPanel bind:payload={PAYLOAD} bind:isPanelOpen={isEditPayloadPanelOpen} on:updatepayload={saveEditedPayload} />
+<AddOperationsPanel bind:isPanelOpen={isAddOperationPanelOpen} on:newoperation={addOperation} bind:flowID={activeFlow} bind:flow={PAYLOAD.flows}/>
+<AddFlowPanel bind:isPanelOpen={isAddFlowPanelOpen} on:addflow={addFlow} />
+<PresetsBrowserPanel {toast} bind:payload={PAYLOAD} on:loadpreset={loadPayloadPreset} bind:isPanelOpen={isPresetsBrowserPanelOpen} />
+<GenSchema bind:isPanelOpen={isGenSchemaPanelOpen} {toast} bind:payload={PAYLOAD} />
+
+<main class="flex flex-col w-screen overflow-hidden items-center">
    {#if PAYLOAD} 
       <Draggy class="flex flex-row mt-11 p-6 justify-center" let:list bind:list={PAYLOAD.flows} bind:this={draggyRoot}>
             <Card.Root class="w-[60rem] h-min">
@@ -307,15 +376,3 @@
       </p>
    </footer>
 </main>
-
-<AlertStopExecution bind:isPanelOpen={isStopExecutionPanelOpen} stopAction={stopPayloadRequest} />
-<PayloadOutputPanel {toast} bind:isPanelOpen={isOutputPanelOpen} bind:isPayloadRunning />
-<PayloadLogsPanel {toast} bind:isPanelOpen={isLogsPanelOpen} bind:isPayloadRunning />
-<EditPayloadPanel bind:payload={PAYLOAD} bind:isPanelOpen={isEditPayloadPanelOpen} on:updatepayload={saveEditedPayload} />
-<AddOperationsPanel bind:isPanelOpen={isAddOperationPanelOpen} on:newoperation={addOperation} bind:flowID={activeFlow} bind:flow={PAYLOAD.flows}/>
-<AddFlowPanel bind:isPanelOpen={isAddFlowPanelOpen} on:addflow={addFlow} />
-<PresetsBrowserPanel {toast} bind:payload={PAYLOAD} on:loadpreset={loadPayloadPreset} bind:isPanelOpen={isPresetsBrowserPanelOpen} />
-
-{#if env?.PUBLIC_ENABLE_MJ}
-   <Ihi />
-{/if}

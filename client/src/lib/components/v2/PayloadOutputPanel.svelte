@@ -4,23 +4,24 @@
    import hljs from 'highlight.js/lib/core';
    import hljs_theme from 'highlight.js/styles/tokyo-night-dark.min.css';
    import json from 'highlight.js/lib/languages/json';
-   import { ServerHandler } from '$lib/ServerHandler';
-   import { LOGGER, TAGS } from "$lib/LogStore";
-    import Clipboard from "$lib/components/Clipboard.svelte";
+   import Clipboard from "$lib/components/Clipboard.svelte";
 
    export let isPanelOpen;
    export let isPayloadRunning;
    export let toast;
+   export let socket;
 
-   let responseTextareaEl;
    let outputCodeEl;
+   let output = JSON.stringify({}, null ,3);
 
-   ServerHandler.logger = LOGGER;
-   ServerHandler.logger_tags = TAGS;
+   socket.on('output', (details) => {
+      output = JSON.stringify(details.flows_output, null ,3);
+      console.log('OUTPUT', output);
+   })
 
    hljs.registerLanguage('json', json);
 
-   $: clipboardContent = JSON.stringify(JSON.parse(ServerHandler.responsePayload), null, 3);
+   $: clipboardContent = output;
 
    $: {
       if (isPanelOpen && !outputCodeEl?.dataset?.highlighted && outputCodeEl) {
@@ -36,10 +37,7 @@
          <Dialog.Description class="text-base">The payload output.</Dialog.Description>
       </Dialog.Header>
       {#key isPayloadRunning}
-         <pre class="h-[50vh] rounded-lg overflow-x-auto w-[57rem] font-code p-5 mt-2" 
-            bind:this={outputCodeEl}
-         >{ JSON.stringify(JSON.parse(ServerHandler.responsePayload), null ,3) }
-         </pre>
+         <pre class="h-[50vh] rounded-lg overflow-x-auto w-[57rem] font-code p-5 mt-2" bind:this={outputCodeEl}>{output}</pre>
       {/key}
 
       <div class="flex flex-row-reverse gap-x-2">
