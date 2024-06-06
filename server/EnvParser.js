@@ -16,7 +16,7 @@ export class EnvParser {
    }
 
    static parseString (str) {
-      if (str.match(/(?<={{)[^{}]+(?=}})/g)) {
+      if (typeof str === 'string' && str?.match(/(?<={{)[^{}]+(?=}})/g)) {
          str = str.replace(/{{([^{}]+)}}/g, (_, cgs) => {
             const { raw, global, kebab, snake } = this.parseFlags(cgs);
             

@@ -8,6 +8,7 @@ import { RunFlowForEach } from "./operations/RunFlowForEach.js";
 import { WaitForDOM } from "./operations/WaitForDOM.js";
 
 export class FlowHandler {
+   static outputBuffer;
    static payload;
    static globalPayload;
 
@@ -16,9 +17,8 @@ export class FlowHandler {
    }
 
    static setEnv(payload) {
-      this.emitEvent('operation_message', { info: 'Setting global env...' })
+      // this.emitEvent('operation_message', { info: 'Setting global env...' })
       for (let [o_key, o_value] of Object.entries(payload)) {
-         // console.log(o_key, o_value);
          this.payload.env[o_key] = o_value;
       }
    }
@@ -50,13 +50,21 @@ export class FlowHandler {
 
    static async execFlows ({ payload }) {
       this.payload = structuredClone(payload);
-      this.globalPayload = structuredClone(payload);
+      console.log(this.payload);
+      
+      // if (this.outputBuffer) {
+      //    this.payload.env = this.outputBuffer;
+      //    console.log('Loading outputBuffer', this.outputBuffer);
+      // }
+
+      // this.globalPayload = structuredClone(payload);
       await Browser.launch();
 
       this.emitEvent('main_flow_start', { flow: 'Executing Main Flow...' });
 
       const output = await this.operations.run_flow.exec();
 
+      this.outputBuffer = output;
       this.emitEvent('output', { flows_output: output });
       this.emitEvent('operation_message', { flow: 'Processing done!' });
       this.emitEvent('main_flow_end');

@@ -135,7 +135,7 @@
         <Tabs.Root active="logs_tab">
             <Tabs.List class="grid grid-cols-2 w-[87cqw] mb-4">
                 <Tabs.Trigger class="col-span-1" value="logs_tab">Logs</Tabs.Trigger>
-                <Tabs.Trigger class="col-span-1" value="screenshot_tab">Screenshot</Tabs.Trigger>
+                <Tabs.Trigger class="col-span-1" value="screenshot_tab">Last Error Screenshot</Tabs.Trigger>
             </Tabs.List>
 
             <Tabs.Content value="logs_tab" class="h-[60vh]">
@@ -191,7 +191,7 @@
                             <img class="rounded-md object-contain h-full mx-auto" alt="No screenshot found." src="/last_error.png?{Math.random().toString().slice(2, 8)}"/>
                         {/key}
                     {:else}
-                        <p class="text-neutral-500 text-center my-auto">No Last Error screenshot</p>
+                        <p class="text-neutral-500 text-center my-auto">No Last Error Screenshot</p>
                     {/if}
                 </div>
             </Tabs.Content>

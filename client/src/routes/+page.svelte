@@ -298,6 +298,7 @@
    bind:isAddFlowPanelOpen
    bind:isPayloadRunning 
    bind:isGenSchemaPanelOpen 
+   bind:hasLoadFinished
    runCombinedPayload={executeFlows} {savePayloadToLS} {loadBlankPayload}
 />
 
