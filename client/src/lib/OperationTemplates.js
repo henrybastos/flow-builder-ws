@@ -1,5 +1,9 @@
 import { FLOW_BUILDER_INPUT_FIELD_TEMPLATES } from "./InputFieldTemplates";
 
+export const OPERATIONS_SCHEMA_MIGRATION = {
+    wait_for_dom_render: 'wait_for_dom'
+}
+
 /**
  * @typedef {Object} Operation
  * @property {string} command
@@ -8,7 +12,7 @@ import { FLOW_BUILDER_INPUT_FIELD_TEMPLATES } from "./InputFieldTemplates";
  * @property {'btn'} type
  */
 
-export const FLOW_BUILDER_OPERATION_TEMPLATES = {
+export const OPERATIONS_SCHEMA = {
     goto: {
         command: 'goto',
         enabled: true,
@@ -197,8 +201,8 @@ export const FLOW_BUILDER_OPERATION_TEMPLATES = {
         label: 'Wait For Navigation',
         icon: 'ti-speedboat'
     },
-    wait_for_dom_render: {
-        command: 'wait_for_dom_render',
+    wait_for_dom: {
+        command: 'wait_for_dom',
         enabled: true,
         label: 'Wait For DOM',
         icon: 'ti-crane',

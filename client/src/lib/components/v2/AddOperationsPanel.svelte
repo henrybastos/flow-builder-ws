@@ -3,7 +3,7 @@
    import Button from '$lib/components/ui/button/button.svelte';
    import * as Dialog from '$lib/components/ui/dialog';
    import ScrollArea from '$lib/components/ui/scroll-area/scroll-area.svelte';
-   import { FLOW_BUILDER_OPERATION_TEMPLATES as OPERATIONS_SCHEMA } from "$lib/OperationTemplates";
+   import { OPERATIONS_SCHEMA  } from "$lib/OperationTemplates";
 
    export let isPanelOpen;
    export let flowID;

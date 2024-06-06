@@ -3,7 +3,7 @@
     import { slide } from "svelte/transition";
     import { ServerHandler } from "$lib/ServerHandler";
     import { createEventDispatcher } from "svelte";
-    import { FLOW_BUILDER_OPERATION_TEMPLATES } from "$lib/OperationTemplates";
+    import { OPERATIONS_SCHEMA } from "$lib/OperationTemplates";
     import { LOGGER, TAGS } from "$lib/LogStore";
     import { CURRENT_PRESET_NAME } from "$lib/PresetsStore";
     import { PAYLOAD } from "$lib/PayloadStore";
@@ -47,8 +47,8 @@
             PAYLOAD.addFlow(_flow_name);
 
             Object.values(_flow_body).forEach((operation) => {
-                if ( FLOW_BUILDER_OPERATION_TEMPLATES[operation.command] ) {
-                    const operationBody = structuredClone( FLOW_BUILDER_OPERATION_TEMPLATES[operation.command] );
+                if ( OPERATIONS_SCHEMA[operation.command] ) {
+                    const operationBody = structuredClone( OPERATIONS_SCHEMA[operation.command] );
                     operationBody.enabled = operation.enabled;
                     
                     if (operationBody?.input_fields) {

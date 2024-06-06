@@ -3,7 +3,7 @@
    import Input from "$lib/components/ui/input/input.svelte";
    import * as Select from "$lib/components/ui/select";
    import * as Card from '$lib/components/ui/card';
-   import { FLOW_BUILDER_OPERATION_TEMPLATES as OPERATIONS_SCHEMA } from "$lib/OperationTemplates";
+   import { OPERATIONS_SCHEMA, OPERATIONS_SCHEMA_MIGRATION } from "$lib/OperationTemplates";
    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
    import FlowOperationDropdown from "./FlowOperationDropdown.svelte";
    import Button from "$lib/components/ui/button/button.svelte";
@@ -13,9 +13,9 @@
    export let flows;
    export let operation;
 
-   let isDragActive = getContext('isDragActive');
+   // let isDragActive = getContext('isDragActive');
 
-   const operationSchema = OPERATIONS_SCHEMA?.[operation.data.command];
+   const operationSchema = OPERATIONS_SCHEMA?.[OPERATIONS_SCHEMA_MIGRATION[operation.data.command] || operation.data.command];
    let operationDescription = '';
    let canEditDescription = false;
    let editDescriptionInputValue;

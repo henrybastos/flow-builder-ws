@@ -1,6 +1,6 @@
 <script>
    import { createEventDispatcher } from "svelte";
-   import { FLOW_BUILDER_OPERATION_TEMPLATES as OPERATIONS_SCHEMA } from "$lib/OperationTemplates";
+   import { OPERATIONS_SCHEMA  } from "$lib/OperationTemplates";
    import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
    import Button from "$lib/components/ui/button/button.svelte";
 
