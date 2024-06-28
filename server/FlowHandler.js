@@ -8,9 +8,12 @@ import { RunFlowForEach } from "./operations/RunFlowForEach.js";
 import { WaitForDOM } from "./operations/WaitForDOM.js";
 
 export class FlowHandler {
-   static outputBuffer;
+   static output;
    static payload;
    static globalPayload;
+   static config = {
+      persistentData: false
+   };
 
    static setSocket (socket) {
       this.socket = socket;
@@ -51,22 +54,28 @@ export class FlowHandler {
    static async execFlows ({ payload }) {
       this.payload = structuredClone(payload);
       console.log(this.payload);
-      
-      // if (this.outputBuffer) {
-      //    this.payload.env = this.outputBuffer;
-      //    console.log('Loading outputBuffer', this.outputBuffer);
-      // }
 
-      // this.globalPayload = structuredClone(payload);
+      this.globalPayload = structuredClone(payload);
       await Browser.launch();
 
       this.emitEvent('main_flow_start', { flow: 'Executing Main Flow...' });
+      
+      if (this.config.persistentData) {
+         this.output = {
+            ...this.output,
+            ...(await this.operations.run_flow.exec())
+         };
+      } else {
+         this.output = await this.operations.run_flow.exec();
+      }
 
-      const output = await this.operations.run_flow.exec();
-
-      this.outputBuffer = output;
-      this.emitEvent('output', { flows_output: output });
+      this.emitEvent('output', { flows_output: this.output });
       this.emitEvent('operation_message', { flow: 'Processing done!' });
+      
+      if (this.payload.config.close_browser_on_finish) {
+         await this.operations.close_browser.exec();
+      }
+
       this.emitEvent('main_flow_end');
    }
 }

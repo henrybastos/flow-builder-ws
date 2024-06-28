@@ -47,7 +47,7 @@ export class Browser {
                'accept-language': 'pt-BR,en-US,en;q=0.9,en;q=0.8'
             });
 
-            // await this.injectAllFunctions();
+            await this.injectAllFunctions();
 
             this.isBrowserOpen = true;
             console.log(`[BROWSER] New browser launched at ${ this.webSocketEndpoint }`);
@@ -101,6 +101,7 @@ export class Browser {
 
    static async injectAllFunctions () {
       await this.injectFunctionX();
+      await this.injectFunctionXXX();
       await this.injectFunctionEnv();
       await this.injectFunctionAsyncEval();
    }
@@ -108,6 +109,18 @@ export class Browser {
    static async injectFunctionX () {
       console.log('[BROWSER] Injecting function x...');
       await this.page.evaluate(() => x = (xpath) => document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue)
+   }
+
+   static async injectFunctionXXX () {
+      console.log('[BROWSER] Injecting function xxx...');
+      await this.page.evaluate(() => xxx = (path, root) => {
+         const nodesSnapshot = document.evaluate(path, root || document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+         let elements = [];
+         for (let i = 0; i < nodesSnapshot.snapshotLength; i++) {
+             elements.push(nodesSnapshot.snapshotItem(i));
+         }
+         return elements;
+     })
    }
 
    static async injectFunctionEnv () {

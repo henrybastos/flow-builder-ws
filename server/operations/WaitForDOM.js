@@ -30,7 +30,8 @@ export class WaitForDOM extends Operation {
             }
 
             lastHTMLSize = currentHTMLSize;
-            await this.page.waitForTimeout(checkDurationMsecs);
+            await new Promise((res) => setTimeout(res, checkDurationMsecs));
+            // await this.page.waitForTimeout(checkDurationMsecs);
          }
       } catch (err) {
          console.error(err);

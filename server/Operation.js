@@ -30,10 +30,15 @@ export class Operation extends Browser {
          }
       }
 
-      if (typeof output === 'object' && !Array.isArray(output)) {
-         return EnvParser.parsePlaceholders(output);
+      if (Array.isArray(output)) {
+         return EnvParser.parsePlaceholders({ 
+            [`data_${Math.random().toString().substring(2, 8)}`]: output, 
+            _metadata: {
+               length: Object.keys(output).length
+            } 
+         });
       } else {
-         return EnvParser.parsePlaceholders({ data: output });
+         return EnvParser.parsePlaceholders(output);
       }
    }
 }

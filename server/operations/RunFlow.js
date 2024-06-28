@@ -3,6 +3,10 @@ import { FlowHandler } from "../FlowHandler.js";
 import { Operation } from "../Operation.js";
 
 export class RunFlow extends Operation {
+   static deprecatedOperationsDictionary = {
+      'wait_for_dom_render': 'wait_for_dom'
+   }
+
    /**
     * @description Runs a flow
     * @param {string} flow - The flow to execute.
@@ -15,9 +19,12 @@ export class RunFlow extends Operation {
 
          for (let op of FlowHandler.payload.flows[flow]) {
             if (op.enabled) {
-               const output = await FlowHandler.operations[op.command].exec(op);
+               const output = await FlowHandler.operations[this.deprecatedOperationsDictionary?.[op.command] || op.command].exec(op);
                
                if (output) {
+                  process.stdout.write('[RUN_FLOW:OUTPUT]')
+                  console.dir(output, { depth: null });
+
                   for (let envKey of Object.keys(output)) {
                      const envKeyFlags = EnvParser.parseFlags(envKey);
                      
@@ -29,7 +36,6 @@ export class RunFlow extends Operation {
             }
          }
 
-         console.log('FLOWS OUTPUT', flowsOutput);
          return flowsOutput;
       } catch (error) {
          this.emitMessage('error', `Unable to run flow ${ flow }`);
