@@ -25,6 +25,10 @@
    function toggleOperation () {
       operation.data.enabled = !operation.data.enabled;
    }
+
+   // function duplicateOperation () {
+      
+   // }
 </script>
 
 <DropdownMenu.Root>
@@ -34,6 +38,10 @@
       </Button>
    </DropdownMenu.Trigger>
    <DropdownMenu.Content class="w-56">
+      <!-- <DropdownMenu.Item on:click={duplicateOperation}>
+         Duplicate operation
+      </DropdownMenu.Item> -->
+
       {#if operation.data?.description}
          <DropdownMenu.Item class="text-red-600" on:click={removeDescription}>
             Remove description

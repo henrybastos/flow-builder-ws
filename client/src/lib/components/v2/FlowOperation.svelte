@@ -8,8 +8,9 @@
    import FlowOperationDropdown from "./FlowOperationDropdown.svelte";
    import Button from "$lib/components/ui/button/button.svelte";
    import Badge from "$lib/components/ui/badge/badge.svelte";
-   import { getContext } from "svelte";
+   import { getContext, onMount } from "svelte";
 
+   // export let flow;
    export let flows;
    export let operation;
 
@@ -19,6 +20,10 @@
    let operationDescription = '';
    let canEditDescription = false;
    let editDescriptionInputValue;
+   
+   // onMount(() => {
+   //    console.log(flow);
+   // }),
 
    function saveEditedDescription () {
       operation.data.description = editDescriptionInputValue;

@@ -271,11 +271,13 @@
             const selectedElement = document.activeElement;
             const [ selStart, selEnd ] = [selectedElement.selectionStart, selectedElement.selectionEnd];
 
-            selectedElement.value = [
-               selectedElement.value.slice(0, selStart),
-               'Ihi',
-               selectedElement.value.slice(selEnd)
-            ].join('');
+            if (selectedElement.value) {
+               selectedElement.value = [
+                  selectedElement.value.slice(0, selStart),
+                  'Ihi',
+                  selectedElement.value.slice(selEnd)
+               ].join('');
+            }
          }
       })
    })
