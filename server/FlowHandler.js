@@ -1,4 +1,5 @@
 import { Browser } from "./Browser.js";
+import { BranchEvaluate } from "./operations/BranchEvaluate.js";
 import { Click } from "./operations/Click.js";
 import { CloseBrowser } from "./operations/CloseBrowser.js";
 import { EvalExpression } from "./operations/EvalExpression.js";
@@ -33,7 +34,8 @@ export class FlowHandler {
       run_flow: RunFlow,
       run_flow_for_each: RunFlowForEach,
       wait_for_dom: WaitForDOM,
-      close_browser: CloseBrowser
+      close_browser: CloseBrowser,
+      branch_eval: BranchEvaluate
    };
 
    /**

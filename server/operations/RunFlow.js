@@ -17,6 +17,8 @@ export class RunFlow extends Operation {
 
          this.emitMessage('flow', `Running flow ${ flow } ...`);
 
+         console.log('FLOW TEST', FlowHandler.payload.flows[flow]);
+
          for (let op of FlowHandler.payload.flows[flow]) {
             if (op.enabled) {
                const output = await FlowHandler.operations[this.deprecatedOperationsDictionary?.[op.command] || op.command].exec(op);

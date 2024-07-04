@@ -117,7 +117,7 @@
             {
                icon: 'ti-crane',
                label: 'Wait for DOM',
-               value: 'wait_for_dom_render'
+               value: 'wait_for_dom'
             },
             {
                icon: 'ti-box-margin',
