@@ -3,6 +3,7 @@ import { Operation } from "../Operation.js";
 export class EvalExpression extends Operation {
     static async exec({ expression }) {
         try {
+            await this.injectAllFunctions();
             this.emitMessage('info', `Evaluating expression: ${ expression }`);
             const expressionOutput = await this.page.evaluate(expression);
 

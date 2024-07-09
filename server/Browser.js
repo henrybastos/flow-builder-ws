@@ -86,7 +86,7 @@ export class Browser {
       const element = await this.waitForElement({ target });
       
       if (element) {
-         return await this.page.$$(`xpath/${ target }`);
+         return await this.page.$$(`xpath/${ target }`) || [null];
       }
    }
 

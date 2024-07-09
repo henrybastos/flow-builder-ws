@@ -4,9 +4,12 @@ import { Click } from "./operations/Click.js";
 import { CloseBrowser } from "./operations/CloseBrowser.js";
 import { EvalExpression } from "./operations/EvalExpression.js";
 import { Goto } from "./operations/Goto.js";
+import { KBType } from "./operations/KBType.js";
 import { RunFlow } from "./operations/RunFlow.js";
-import { RunFlowForEach } from "./operations/RunFlowForEach.js";
+// import { RunFlowForEach } from "./operations/RunFlowForEach.js";
 import { WaitForDOM } from "./operations/WaitForDOM.js";
+import { WaitForNavigation } from "./operations/WaitForNavigation.js";
+import { WaitSeconds } from "./operations/WaitSeconds.js";
 
 export class FlowHandler {
    static output;
@@ -17,6 +20,9 @@ export class FlowHandler {
    };
 
    static setSocket (socket) {
+      /**
+       * @type {import('socket.io').Socket} Socket
+       */
       this.socket = socket;
    }
 
@@ -32,10 +38,13 @@ export class FlowHandler {
       eval_expression: EvalExpression,
       click: Click,
       run_flow: RunFlow,
-      run_flow_for_each: RunFlowForEach,
+      run_flow_for_each: RunFlow,
       wait_for_dom: WaitForDOM,
       close_browser: CloseBrowser,
-      branch_eval: BranchEvaluate
+      branch_eval: BranchEvaluate,
+      wait_seconds: WaitSeconds,
+      keyboard_type: KBType
+      // wait_for_navigation: WaitForNavigation
    };
 
    /**
@@ -55,8 +64,6 @@ export class FlowHandler {
 
    static async execFlows ({ payload }) {
       this.payload = structuredClone(payload);
-      console.log(this.payload);
-
       this.globalPayload = structuredClone(payload);
       await Browser.launch();
 
@@ -79,5 +86,10 @@ export class FlowHandler {
       }
 
       this.emitEvent('main_flow_end');
+   }
+
+   static async stopExecution() {
+      await this.operations.close_browser.exec();
+      this.emitEvent('operation_message', { flow: 'Server stopped the execution. Browser closed' });
    }
 }
