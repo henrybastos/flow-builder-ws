@@ -34,7 +34,7 @@ export const OPERATIONS_SCHEMA = {
         label: 'Click',
         icon: 'ti-pointer',
         input_fields: {
-            target: FLOW_BUILDER_INPUT_FIELD_TEMPLATES.target_url
+            target: FLOW_BUILDER_INPUT_FIELD_TEMPLATES.xpath
         }
     },
     user_click: {
@@ -43,7 +43,7 @@ export const OPERATIONS_SCHEMA = {
         label: 'User click',
         icon: 'ti-hand-click',
         input_fields: {
-            target: FLOW_BUILDER_INPUT_FIELD_TEMPLATES.target_url
+            target: FLOW_BUILDER_INPUT_FIELD_TEMPLATES.xpath
         }
     },
     scrape_attr: {
@@ -115,7 +115,7 @@ export const OPERATIONS_SCHEMA = {
         icon: 'ti-zoom-scan',
         input_fields: {
             flow: FLOW_BUILDER_INPUT_FIELD_TEMPLATES.flow,
-            env_var:  FLOW_BUILDER_INPUT_FIELD_TEMPLATES.env_var,
+            env_scope:  FLOW_BUILDER_INPUT_FIELD_TEMPLATES.env_scope,
         }
     },
     set_payload_slot: {

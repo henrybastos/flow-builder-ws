@@ -1,5 +1,5 @@
 <script>
-   import { onMount, setContext } from 'svelte';
+   import { onMount, setContext, onDestroy, beforeUpdate, afterUpdate } from 'svelte';
    import { writable } from 'svelte/store';
    import { env } from "$env/dynamic/public"
    import { toast } from 'svelte-sonner';
@@ -26,6 +26,7 @@
    import PresetsBrowserPanel from '$lib/components/v2/PresetsBrowser/PresetsBrowserPanel.svelte';
    import GenSchema from '$lib/modules/GenSchema.svelte';
    import { io } from 'socket.io-client';
+   import DevCommands from '$lib/components/v2/DevCommands/DevCommands.svelte';
 
    let isPayloadRunning = false;
    
@@ -94,15 +95,6 @@
       const sendPayloadPromise = new Promise(async (resolve, reject) => {
          isPayloadRunning = true;
          setFooterMessage('Executing payload...', { loading: true, fixed: true });
-
-         // const fetchError = await ServerHandler.sendFlowPayload(PAYLOAD);
-         
-         // if (fetchError) { 
-         //    console.log("ERROR", fetchError);
-         //    isPayloadRunning = false;
-         //    setFooterMessage('Payload failed to execute.', { fixed: true });
-         //    reject(fetchError);
-         // }
          
          isPayloadRunning = false;
          resolve();
@@ -136,8 +128,8 @@
    }
 
    async function stopPayloadRequest () {
-      await ServerHandler.closeBrowser();
-      // isPayloadRunning = false;
+      socket._emit('stop_execution');
+      isPayloadRunning = false;
    }
 
    function openAddOperationPanel ({ detail }) {
@@ -230,14 +222,15 @@
          isPayloadRunning = true;
          setFooterMessage('Executing payload...', { loading: true, fixed: true });
 
-         socket.connect();
+         // socket.connect();
          console.log(`[WS] Connected at ${ socket.id }`);
-         socket.emit('exec_flows', { payload: PAYLOAD  });
+         socket._emit('exec_flows', { payload: PAYLOAD  });
 
          socket.on('main_flow_end', () => {
             isPayloadRunning = false;
             resolve();
          });
+         
       })
 
       toast.promise(sendPayloadPromise, {
@@ -255,12 +248,16 @@
    onMount(() => {
       // console.log('LS PAYLOAD', localStorage.getItem('tempPayload'), PAYLOAD);
       loadPayloadFromLS();
+      socket.on('new_connection', ({ socketID }) => {
+         console.log('New connection', socketID);
+         socket.join("main");
+         // socket.connect();
+      })
 
       Array.from(document.querySelectorAll('[data-footer-message]')).forEach(el => {
          el.addEventListener('mouseenter', () => {
             setFooterMessage(el.dataset.footerMessage);
          })
-
          el.addEventListener('mouseleave', () => {
             setFooterMessage($footerFixedMessage || '');
          })
@@ -281,6 +278,11 @@
          }
       })
    })
+
+   onDestroy(() => {
+      console.log(`Socket disconnecting...`);
+      socket.disconnect();
+   });
 </script>
 
 <svelte:head>
@@ -301,9 +303,12 @@
    bind:isPayloadRunning 
    bind:isGenSchemaPanelOpen 
    bind:hasLoadFinished
-   runCombinedPayload={executeFlows} {savePayloadToLS} {loadBlankPayload}
+   runCombinedPayload={executeFlows}
+   {savePayloadToLS} 
+   {loadBlankPayload}
 />
 
+<DevCommands {toast} {socket} />
 <AlertStopExecution bind:isPanelOpen={isStopExecutionPanelOpen} stopAction={stopPayloadRequest} />
 <PayloadOutputPanel {socket} {toast} bind:isPanelOpen={isOutputPanelOpen} bind:isPayloadRunning />
 <PayloadLogsPanel {socket} {toast} bind:isPanelOpen={isLogsPanelOpen} bind:isPayloadRunning />

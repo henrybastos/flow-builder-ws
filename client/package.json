@@ -34,6 +34,7 @@
     "@sveltejs/adapter-node": "^5.0.1",
     "bits-ui": "^0.21.2",
     "clsx": "^2.1.0",
+    "cmdk-sv": "^0.0.17",
     "highlight.js": "^11.9.0",
     "lucide-svelte": "^0.314.0",
     "mode-watcher": "^0.1.2",

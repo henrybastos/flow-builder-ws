@@ -14,8 +14,9 @@
    export let flows;
    export let operation;
 
+   
    // let isDragActive = getContext('isDragActive');
-
+   
    const operationSchema = OPERATIONS_SCHEMA?.[OPERATIONS_SCHEMA_MIGRATION[operation.data.command] || operation.data.command];
    let operationDescription = '';
    let canEditDescription = false;
@@ -66,74 +67,81 @@
       <Card.Content class="space-y-3">
          {#if operationSchema.input_fields}   
             {#each Object.entries(operationSchema.input_fields) as [command_name, command]}
-               
-               <!-- TEXT -->
-               {#if command.type === 'text'}
-                  <div>
-                     <Label class="text-lg">{ command.label }</Label>
-                     
-                     {#key operation.data[command_name]}   
-                        {#if operation.data[command_name].match(/(?<=@@)([^@]+)(?=@)/g)}
-                           <Input value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-orange-500" type="text" />                     
-                        {:else if command.code_font}
-                           <Input value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-green-500" type="text" />
-                        {:else}
-                           <Input value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1" type="text" />
-                        {/if}
-                     {/key}
-                  </div>
-               {/if}
 
-               <!-- TEXTAREA -->
-               {#if command.type === 'textarea'}
-                  <div>
-                     <Label class="text-lg">{ command.label }</Label>
+               {#if operation.data?.[command_name] != undefined}
+                  <!-- TEXT -->
+                  {#if command.type === 'text'}
+                     <div>
+                        <Label class="text-lg">{ command.label }</Label>
+                        
+                        {#key operation.data[command_name]}   
+                           {#if operation.data[command_name]?.match(/(?<={{)([^{}]+)(?=}})/g)}
+                              <Input value={operation.data[command_name]} placeholder={command.placeholder} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-orange-500" type="text" />                     
+                           {:else if command.code_font}
+                              <Input value={operation.data[command_name]} placeholder={command.placeholder} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-green-500" type="text" />
+                           {:else}
+                              <Input value={operation.data[command_name]} placeholder={command.placeholder} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1" type="text" />
+                           {/if}
+                        {/key}
+                     </div>
+                  {/if}
 
-                     {#key operation.data[command_name]}   
-                        {#if operation.data[command_name].match(/(?<=@@)([^@]+)(?=@)/g)}
-                           <Textarea wrap='off' rows="6" value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-orange-500" />
-                           <!-- <Input  type="text" />                      -->
-                        {:else if command.code_font}
-                           <Textarea wrap='off' rows="6" value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-green-500" />
-                        {:else}
-                           <Textarea wrap='off' rows="6" value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1" />
-                        {/if}
-                     {/key}
-                  </div>
-               {/if}
+                  <!-- TEXTAREA -->
+                  {#if command.type === 'textarea'}
+                     <div>
+                        <Label class="text-lg">{ command.label }</Label>
 
-               <!-- DROPDOWN -->
-               {#if command.type === 'dropdown'}
-                  <div>
-                     <Label class="text-lg">{ command.label }</Label>
-                     
-                     <Select.Root onSelectedChange={(option) => operation.data[command_name] = option.value}>
-                        <Select.Trigger class="mt-1 text-base capitalize">
-                           <Select.Value class="text-base capitalize" placeholder={operation.data[command_name].replaceAll('_', ' ')} />
-                        </Select.Trigger>
-                        <Select.Content>
-                           <Select.Item value='' label='' class="text-base">-</Select.Item>
-                           {#each Object.keys(flows) as flow}
-                              <Select.Item value={flow} label={flow.replaceAll('_', ' ')} class="text-base capitalize">{ flow.replaceAll('_', ' ') }</Select.Item>
-                           {/each}
-                        </Select.Content>
-                     </Select.Root>
+                        {#key operation.data[command_name]}   
+                           {#if operation.data[command_name]?.match(/(?<={{})([^{}]+)(?=}})/g)}
+                              <Textarea wrap='off' rows="6" value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-orange-500" />
+                              <!-- <Input  type="text" />                      -->
+                           {:else if command.code_font}
+                              <Textarea wrap='off' rows="6" value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1 font-code text-green-500" />
+                           {:else}
+                              <Textarea wrap='off' rows="6" value={operation.data[command_name]} on:change={({ target }) => operation.data[command_name] = target.value} class="text-base mt-1" />
+                           {/if}
+                        {/key}
+                     </div>
+                  {/if}
+
+                  <!-- DROPDOWN -->
+                  {#if command.type === 'dropdown'}
+                     <div>
+                        <Label class="text-lg">{ command.label }</Label>
+                        
+                        <Select.Root onSelectedChange={(option) => operation.data[command_name] = option.value}>
+                           <Select.Trigger class="mt-1 text-base capitalize">
+                              <Select.Value class="text-base capitalize" placeholder={operation.data[command_name].replaceAll('_', ' ')} />
+                           </Select.Trigger>
+                           <Select.Content>
+                              <Select.Item value='' label='' class="text-base">-</Select.Item>
+                              {#each Object.keys(flows) as flow}
+                                 <Select.Item value={flow} label={flow.replaceAll('_', ' ')} class="text-base capitalize">{ flow.replaceAll('_', ' ') }</Select.Item>
+                              {/each}
+                           </Select.Content>
+                        </Select.Root>
+                     </div>
+                  {/if}
+               {:else}
+                  <div class="text-red-500 inline-flex space-x-2">
+                     <i class="ti ti-zoom-question"></i>
+                     <p>Unknown command: { command_name }</p>
                   </div>
                {/if}
 
             {/each}
          {:else}
-            <p>No commands</p>
+            <p class="text-muted-foreground">No attributes</p>
          {/if}
       </Card.Content>
    </Card.Root>
 {:else}
    <Card.Root class="data-[draggy-active]:opacity-30 border-0 rounded-none">
       <Card.Header>
-         <Card.Title class="text-red-400 text-xl">
+         <Card.Title class="text-red-500 text-xl">
             <i class="ti ti-zoom-question text-2xl mr-1"></i>
             Unknown operation
-            <code class="ml-2 text-lg bg-neutral-800 py-2 px-3 rounded-lg">{ operation.data.command }</code>
+            <code class="ml-2 text-lg border border-red-900 py-1 px-3 rounded-lg">{ operation.data.command }</code>
          </Card.Title>      
       </Card.Header>
    </Card.Root>

@@ -1,4 +1,13 @@
 export const FLOW_BUILDER_INPUT_FIELD_TEMPLATES = {
+    // NEO 2.0 INPUTS
+    xpath: {
+        type: 'text',
+        label: 'XPath Target',
+        placeholder: '//h1[last()]',
+        code_font: true,
+        value: ''
+    },
+    // LEGACY INPUTS
     flow: {
         type: 'dropdown',
         label: 'Flow',
@@ -26,6 +35,12 @@ export const FLOW_BUILDER_INPUT_FIELD_TEMPLATES = {
         type: 'text',
         label: 'Env variable',
         placeholder: '@@variable@',
+        value: ''
+    },
+    env_scope: {
+        type: 'text',
+        label: 'Env scope',
+        placeholder: '{ variable }',
         value: ''
     },
     env_query: {

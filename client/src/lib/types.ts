@@ -6,29 +6,30 @@ export interface PayloadConfig {
 }
 
 export interface Operation {
-   command: string
-   enabled: boolean
-   target?: string
-   description?: string
-   value?: string
-   name?: string
-   flow?: string
-   time?: string
-   color?: string
-   trigger_target?: string
-   picker_target?: string
-   success_flow?: string
-   error_flow?: string
-   regex?: string
-   expression?: string
-   attr?: string
-   response_slot?: string
-   env_var?: string
-   input_fields?: InputFields
-   page_id?: string
-   key?: string
-   trigger_onchange_on_tab?: boolean
-   filename?: string
+   command: string;
+   enabled: boolean;
+   target?: string;
+   description?: string;
+   value?: string;
+   name?: string;
+   flow?: string;
+   time?: string;
+   color?: string;
+   trigger_target?: string;
+   picker_target?: string;
+   success_flow?: string;
+   error_flow?: string;
+   regex?: string;
+   expression?: string;
+   attr?: string;
+   response_slot?: string;
+   env_var?: string;
+   env_scope?: string;
+   input_fields?: InputFields;
+   page_id?: string;
+   key?: string;
+   trigger_onchange_on_tab?: boolean;
+   filename?: string;
 }
 
 export interface InputFields {
